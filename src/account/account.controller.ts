@@ -1,7 +1,7 @@
 import { Body, ConflictException, Controller, HttpCode, Post, UseGuards, UsePipes } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { z } from 'zod'
-import { ZodValidationPipe } from 'src/pipes/zod-validation-pipe'
+import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
 import { hash } from 'bcryptjs'
 import { AuthGuard } from '@nestjs/passport';
 
