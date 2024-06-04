@@ -1,18 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCourseDto } from './dto/update-course.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateCourseBodySchema } from './@types.courses';
 
 @Injectable()
 export class CoursesService {
   constructor(private prisma: PrismaService) {}
 
-  create(createCourseDto: CreateCourseDto) {
+  create(body: CreateCourseBodySchema) {
     return 'This action adds a new course';
   }
 
-  findAll() {
-    return [{id: 1, name: 'ADS'}, {id: 2, name: 'CC'}];
+  async findAll() {
+    const courses = await this.prisma.courses.findMany()
+
+    return {
+      courses
+    }
   }
 
   async findOne(id: number) {
@@ -29,13 +32,5 @@ export class CoursesService {
     return {
       course
     }
-  }
-
-  update(id: number, updateCourseDto: UpdateCourseDto) {
-    return `This action updates a #${id} course`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} course`;
   }
 }

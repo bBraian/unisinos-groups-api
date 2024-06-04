@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -26,4 +23,14 @@ model Courses {
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
   @@map("courses")
+}
+
+model Feedback {
+  id        Int      @id @default(autoincrement())
+  user_name String
+  feedback  String   @db.Text
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@map("feedback")
 }

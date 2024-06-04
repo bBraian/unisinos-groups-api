@@ -1,26 +1,41 @@
-import { Injectable } from '@nestjs/common';
-import { CreateFeedbackDto } from './dto/create-feedback.dto';
-import { UpdateFeedbackDto } from './dto/update-feedback.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateFeedbackBodySchema } from './@types.feedback';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class FeedbackService {
-  create(createFeedbackDto: CreateFeedbackDto) {
-    return 'This action adds a new feedback';
+  constructor(private prisma: PrismaService) {}
+
+  async create(body: CreateFeedbackBodySchema) {
+    const { user_name, feedback } = body
+ 
+    const response = await this.prisma.feedback.create({
+      data: { user_name, feedback }
+    })
+
+    return {
+      response
+    };
   }
 
-  findAll() {
-    return `This action returns all feedback`;
+  async findAll() {
+    const feedbacks = await this.prisma.feedback.findMany()
+    return {
+      feedbacks
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} feedback`;
-  }
+  async findOne(id: number) {
+    const feedback = await this.prisma.feedback.findUnique({
+      where: { id }
+    })
 
-  update(id: number, updateFeedbackDto: UpdateFeedbackDto) {
-    return `This action updates a #${id} feedback`;
-  }
+    if(!feedback) {
+      throw new NotFoundException('Feedback not found')
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} feedback`;
+    return {
+      feedback
+    }
   }
 }
