@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateCourseBodySchema } from './@types.courses';
+import { CreateCourseBodySchema } from './@types.course';
 
 @Injectable()
-export class CoursesService {
+export class CourseService {
   constructor(private prisma: PrismaService) {}
 
   create(body: CreateCourseBodySchema) {
@@ -11,15 +11,15 @@ export class CoursesService {
   }
 
   async findAll() {
-    const courses = await this.prisma.courses.findMany()
+    const course = await this.prisma.course.findMany()
 
     return {
-      courses
+      course
     }
   }
 
   async findOne(id: number) {
-    const course = await this.prisma.courses.findUnique({
+    const course = await this.prisma.course.findUnique({
       where: {
         id
       }

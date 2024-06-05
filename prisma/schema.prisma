@@ -16,11 +16,12 @@ model User {
   @@map("users")
 }
 
-model Courses {
-  id        Int      @id @default(autoincrement())
+model Course {
+  id        Int       @id @default(autoincrement())
   name      String
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
+  createdAt DateTime  @default(now()) @map(name: "created_at")
+  updatedAt DateTime  @updatedAt @map(name: "updated_at")
+  Subject   Subject[]
 
   @@map("courses")
 }
@@ -32,5 +33,35 @@ model Feedback {
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
-  @@map("feedback")
+  @@map("feedbacks")
+}
+
+model Subject {
+  id    Int    @id @default(autoincrement())
+  title String
+  image String
+
+  courseId Int @map("course_id")
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  course Course @relation(fields: [courseId], references: [id])
+  links  Link[]
+
+  @@map("subjects")
+}
+
+model Link {
+  id        Int    @id @default(autoincrement())
+  title     String
+  link      String
+  subjectId Int    @map("subject_id")
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  subject Subject @relation(fields: [subjectId], references: [id])
+
+  @@map("links")
 }
