@@ -17,11 +17,12 @@ model User {
 }
 
 model Course {
-  id        Int       @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   name      String
-  createdAt DateTime  @default(now()) @map(name: "created_at")
-  updatedAt DateTime  @updatedAt @map(name: "updated_at")
+  createdAt DateTime    @default(now()) @map(name: "created_at")
+  updatedAt DateTime    @updatedAt @map(name: "updated_at")
   Subject   Subject[]
+  PrSubject PrSubject[]
 
   @@map("courses")
 }
@@ -62,7 +63,41 @@ model Link {
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
-  subject Subject @relation(fields: [subjectId], references: [id])
+  subject     Subject @relation(fields: [subjectId], references: [id])
+  prSubjectId Int?
 
   @@map("links")
+}
+
+model PrSubject {
+  id     Int     @id @default(autoincrement())
+  title  String
+  image  String?
+  status String
+
+  courseId Int @map("course_id")
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  course Course   @relation(fields: [courseId], references: [id])
+  PrLink PrLink[]
+
+  @@map("pr_subjects")
+}
+
+model PrLink {
+  id        Int    @id @default(autoincrement())
+  title     String
+  link      String
+  type      String
+  subjectId Int    @map("pr_subject_id")
+  status    String
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  pr_subject PrSubject @relation(fields: [subjectId], references: [id])
+
+  @@map("pr_links")
 }

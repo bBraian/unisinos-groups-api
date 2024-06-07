@@ -14,8 +14,21 @@ export class SubjectService {
     return { subject };
   }
 
-  createPR(body: CreateSubjectBodySchema) {
-    return 'This action sends a new subject to be pull requested';
+  async createPR(body: CreateSubjectBodySchema) {
+    const { course, image, title, whatsappLinks, driveLinks } = body
+
+    const { id } = await this.prisma.prSubject.create({
+      data: { status: 'WAITING_APROVAL', title, image, courseId: course }
+    })
+
+    if(whatsappLinks.length > 0) {
+
+    }
+
+    return {
+      "message": `Disciplina ${id}: ${title} enviado para aprovação`
+    }
+
   }
 
   findAll() {

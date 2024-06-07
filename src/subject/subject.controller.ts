@@ -17,6 +17,8 @@ export class SubjectController {
   }
 
   @Post('/pr')
+  @HttpCode(201)
+  @UsePipes(new ZodValidationPipe(createSubjectBodySchema))
   createPR(@Body() body: CreateSubjectBodySchema) {
     return this.subjectService.createPR(body);
   }
