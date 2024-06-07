@@ -37,9 +37,9 @@ model Feedback {
 }
 
 model Subject {
-  id    Int    @id @default(autoincrement())
+  id    Int     @id @default(autoincrement())
   title String
-  image String
+  image String?
 
   courseId Int @map("course_id")
 
@@ -56,6 +56,7 @@ model Link {
   id        Int    @id @default(autoincrement())
   title     String
   link      String
+  type      String
   subjectId Int    @map("subject_id")
 
   createdAt DateTime @default(now()) @map(name: "created_at")
