@@ -1,5 +1,10 @@
-import { createLinkBodySchema } from "src/link/@types.type";
 import { z } from "zod";
+
+const createLinkBodySchema = z.object({
+  title: z.string(),
+  link: z.string(),
+  type: z.string(),
+})
 
 export const createSubjectBodySchema = z.object({
   course: z.number(),

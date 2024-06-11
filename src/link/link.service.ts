@@ -18,6 +18,29 @@ export class LinkService {
     }
   }
 
+  async createMany(body: CreateLinkBodySchema[]) {
+
+    const createdLinks = await this.prisma.link.createMany({
+      data: body
+    })
+
+    return {
+      createdLinks
+    }
+  }
+
+  async createManyPR(body: CreateLinkBodySchema[]) {
+    const data = body.map(link => ({ status: 'WAITING_APPROVAL', ...link }));
+
+    const createdLinks = await this.prisma.prLink.createMany({
+      data: data
+    })
+
+    return {
+      createdLinks
+    }
+  }
+
   async createPR(body: CreateLinkBodySchema) {
     const { link, subjectId, title, type } = body
 
