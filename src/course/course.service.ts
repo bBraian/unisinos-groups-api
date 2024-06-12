@@ -11,7 +11,7 @@ export class CourseService {
       where: { name: body.name }
     })
 
-    if(courseNameAlreadyTaken) {
+    if(courseNameAlreadyTaken.length > 0) {
       throw new ConflictException('Nome do curso já em uso')
     }
 
