@@ -48,7 +48,13 @@ export class SubjectService {
 
   }
 
-  findAll() {
-    return `This action returns all subject`;
+  async findAll() {
+    const subjects = await this.prisma.subject.findMany({
+      include: { links: true }
+    });
+
+    return {
+      subjects
+    }
   }
 }
