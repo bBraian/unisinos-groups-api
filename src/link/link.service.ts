@@ -57,6 +57,29 @@ export class LinkService {
     return `This action updates a #${id} link`;
   }
 
+  async updatePR(id: number, body: UpdateLinkBodySchema) {
+    const { link, subjectId, title, type } = body
+
+    const linkExistOnPr = await this.prisma.prLink.findUnique({
+      where: { id }
+    })
+
+    if(!linkExistOnPr) {
+      const updatedLink = await this.prisma.prLink.create({
+        data: { status: 'WAITING_APPROVAL', link, subjectId, title, type }
+      })
+
+      return updatedLink
+    } else {
+      const updatedLink = await this.prisma.prLink.update({
+        data: { link, title },
+        where: { id }
+      })
+
+      return updatedLink
+    }
+  }
+
   remove(id: number) {
     return `This action removes a #${id} link`;
   }

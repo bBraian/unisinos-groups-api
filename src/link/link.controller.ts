@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, UsePipes } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, UsePipes, Put } from '@nestjs/common';
 import { LinkService } from './link.service';
 import { CreateLinkBodySchema, UpdateLinkBodySchema, createLinkBodySchema } from './@types.type';
 import { AuthGuard } from '@nestjs/passport';
@@ -21,9 +21,9 @@ export class LinkController {
     return this.linkService.createPR(body);
   }
 
-  @Patch(':id')
+  @Put('link/pr/:id')
   update(@Param('id') id: string, @Body() body: UpdateLinkBodySchema) {
-    return this.linkService.update(+id, body);
+    return this.linkService.updatePR(+id, body);
   }
 
   @Delete(':id')
