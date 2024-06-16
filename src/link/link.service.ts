@@ -44,8 +44,8 @@ export class LinkService {
   async createPR(body: CreateLinkBodySchema) {
     const { link, subjectId, title, type } = body
 
-    const createdLink = await this.prisma.link.create({
-      data: { link, subjectId, title, type }
+    const createdLink = await this.prisma.prLink.create({
+      data: { status: 'WAITING_APPROVAL', link, subjectId, title, type }
     })
 
     return {
