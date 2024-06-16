@@ -55,8 +55,8 @@ export class SubjectService {
 
     const processedSubjects = subjects.map(subject => ({
       ...subject,
-      whatsappLink: subject.links.filter(link => link.type === 'whatsapp'),
-      driveLink: subject.links.filter(link => link.type === 'drive'),
+      whatsappLinks: subject.links.filter(link => link.type === 'whatsapp'),
+      driveLinks: subject.links.filter(link => link.type === 'drive'),
       links: false
     }));
 
