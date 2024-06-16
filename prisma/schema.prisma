@@ -63,8 +63,7 @@ model Link {
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
-  subject     Subject @relation(fields: [subjectId], references: [id])
-  prSubjectId Int?
+  subject Subject @relation(fields: [subjectId], references: [id])
 
   @@map("links")
 }
