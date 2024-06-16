@@ -21,7 +21,7 @@ export class LinkController {
     return this.linkService.createPR(body);
   }
 
-  @Put('link/pr/:id')
+  @Put('/pr/:id')
   update(@Param('id') id: string, @Body() body: UpdateLinkBodySchema) {
     return this.linkService.updatePR(+id, body);
   }
