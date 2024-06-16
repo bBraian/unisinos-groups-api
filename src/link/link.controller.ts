@@ -18,7 +18,7 @@ export class LinkController {
 
   @Post('/pr')
   createPR(@Body() body: CreateLinkBodySchema) {
-    return this.linkService.create(body);
+    return this.linkService.createPR(body);
   }
 
   @Patch(':id')
