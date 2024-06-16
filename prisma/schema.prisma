@@ -79,8 +79,7 @@ model PrSubject {
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
-  course Course   @relation(fields: [courseId], references: [id])
-  PrLink PrLink[]
+  course Course @relation(fields: [courseId], references: [id])
 
   @@map("pr_subjects")
 }
@@ -95,8 +94,6 @@ model PrLink {
 
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
-
-  pr_subject PrSubject @relation(fields: [subjectId], references: [id])
 
   @@map("pr_links")
 }
