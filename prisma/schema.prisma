@@ -16,6 +16,14 @@ model User {
   @@map("users")
 }
 
+model RequestLog {
+  id        Int      @id @default(autoincrement())
+  ip        String
+  timestamp DateTime @default(now())
+
+  @@map("logs")
+}
+
 model Course {
   id        Int         @id @default(autoincrement())
   name      String
@@ -74,7 +82,8 @@ model PrSubject {
   image  String?
   status String
 
-  courseId Int @map("course_id")
+  subjectId Int? @map("subject_id")
+  courseId  Int  @map("course_id")
 
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
@@ -85,12 +94,13 @@ model PrSubject {
 }
 
 model PrLink {
-  id        Int    @id @default(autoincrement())
-  title     String
-  link      String
-  type      String
-  subjectId Int    @map("pr_subject_id")
-  status    String
+  id          Int    @id @default(autoincrement())
+  title       String
+  link        String
+  type        String
+  prSubjectId Int?   @map("pr_subject_id")
+  subjectId   Int?   @map("subject_id")
+  status      String
 
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")

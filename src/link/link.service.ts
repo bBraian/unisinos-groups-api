@@ -19,7 +19,6 @@ export class LinkService {
   }
 
   async createMany(body: CreateLinkBodySchema[]) {
-
     const createdLinks = await this.prisma.link.createMany({
       data: body
     })
