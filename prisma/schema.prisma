@@ -100,6 +100,7 @@ model PrLink {
   type        String
   prSubjectId Int?   @map("pr_subject_id")
   subjectId   Int?   @map("subject_id")
+  linkId      Int?   @map("link_id")
   status      String
 
   createdAt DateTime @default(now()) @map(name: "created_at")

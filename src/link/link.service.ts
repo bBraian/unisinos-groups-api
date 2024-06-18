@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateLinkBodySchema, UpdateLinkBodySchema } from './@types.type';
+import { CreateLinkBodySchema, CreatePrLinkBodySchema, UpdateLinkBodySchema } from './@types.type';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -40,11 +40,11 @@ export class LinkService {
     }
   }
 
-  async createPR(body: CreateLinkBodySchema) {
-    const { link, subjectId, title, type } = body
+  async createPR(body: CreatePrLinkBodySchema) {
+    const { link, subjectId, title, type, linkId } = body
 
     const createdLink = await this.prisma.prLink.create({
-      data: { status: 'WAITING_APPROVAL', link, subjectId, title, type }
+      data: { status: 'WAITING_APPROVAL', link, subjectId, title, type, linkId }
     })
 
     return {

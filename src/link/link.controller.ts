@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, UsePipes, Put } from '@nestjs/common';
+import { Controller, Post, Body, Param, Delete, UseGuards, HttpCode, UsePipes, Put } from '@nestjs/common';
 import { LinkService } from './link.service';
-import { CreateLinkBodySchema, UpdateLinkBodySchema, createLinkBodySchema } from './@types.type';
+import { CreateLinkBodySchema, CreatePrLinkBodySchema, createLinkBodySchema, createPrLinkBodySchema } from './@types.type';
 import { AuthGuard } from '@nestjs/passport';
 import { ZodValidationPipe } from 'src/pipes/zod-validation-pipe';
 
@@ -17,13 +17,9 @@ export class LinkController {
   }
 
   @Post('/pr')
-  createPR(@Body() body: CreateLinkBodySchema) {
+  @UsePipes(new ZodValidationPipe(createPrLinkBodySchema))
+  createPR(@Body() body: CreatePrLinkBodySchema) {
     return this.linkService.createPR(body);
-  }
-
-  @Put('/pr/:id')
-  update(@Param('id') id: string, @Body() body: UpdateLinkBodySchema) {
-    return this.linkService.updatePR(+id, body);
   }
 
   @Delete(':id')

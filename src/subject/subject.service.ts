@@ -34,12 +34,12 @@ export class SubjectService {
 
     if(whatsappLinks) {
       const data = whatsappLinks.map(link => ({ subjectId: id , ...link }));
-      await this.linkService.createMany(data)
+      await this.linkService.createManyPR(data)
     }
 
     if(driveLinks) {
       const data = driveLinks.map(link => ({ subjectId: id , ...link }));
-      await this.linkService.createMany(data)
+      await this.linkService.createManyPR(data)
     }
 
     return {
