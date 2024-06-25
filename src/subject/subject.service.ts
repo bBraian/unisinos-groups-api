@@ -27,18 +27,22 @@ export class SubjectService {
   }
 
   async createPR(body: CreateSubjectBodySchema) {
+    const pullRequest = await this.prisma.pullRequest.create({
+      data: { action: 'new', status: 'AWAITING_APPROVAL' }
+    })
+
     const { course, image, title, whatsappLinks, driveLinks } = body
     const { id } = await this.prisma.prSubject.create({
-      data: { status: 'WAITING_APROVAL', title, image, courseId: course }
+      data: { pullRequestId: pullRequest.id, title, image, courseId: course }
     })
 
     if(whatsappLinks) {
-      const data = whatsappLinks.map(link => ({ subjectId: id , ...link }));
+      const data = whatsappLinks.map(link => ({ pullRequestId: pullRequest.id, subjectId: id, linkId: null, ...link }));
       await this.linkService.createManyPR(data)
     }
 
     if(driveLinks) {
-      const data = driveLinks.map(link => ({ subjectId: id , ...link }));
+      const data = driveLinks.map(link => ({ pullRequestId: pullRequest.id, subjectId: id, linkId: null, ...link }));
       await this.linkService.createManyPR(data)
     }
 

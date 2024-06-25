@@ -5,6 +5,7 @@ export const createLinkBodySchema = z.object({
   link: z.string().trim().min(1, { message: "Required" }),
   type: z.string().trim().min(1, { message: "Required" }),
   subjectId: z.number(),
+
 })
 
 export const createPrLinkBodySchema = z.object({
@@ -13,17 +14,9 @@ export const createPrLinkBodySchema = z.object({
   type: z.string().trim().min(1, { message: "Required" }),
   subjectId: z.number(),
   linkId: z.number().nullable(),
+  pullRequestId: z.number(),
 })
 
 export type CreatePrLinkBodySchema = z.infer<typeof createPrLinkBodySchema>
 
 export type CreateLinkBodySchema = z.infer<typeof createLinkBodySchema>
-
-export const updateLinkBodySchema = z.object({
-  title: z.string().trim().min(1, { message: "Required" }),
-  link: z.string().trim().min(1, { message: "Required" }),
-  type: z.string().trim().min(1, { message: "Required" }),
-  subjectId: z.number()
-})
-
-export type UpdateLinkBodySchema = z.infer<typeof updateLinkBodySchema>

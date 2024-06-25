@@ -8,9 +8,10 @@ import { SubjectModule } from './subject/subject.module';
 import { LinkModule } from './link/link.module';
 import { LogService } from './log/log.service';
 import { RateLimitMiddleware } from './log/log.middleware';
+import { PullRequestModule } from './pull_request/pull_request.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, CourseModule, FeedbackModule, SubjectModule, LinkModule],
+  imports: [PrismaModule, AuthModule, CourseModule, FeedbackModule, SubjectModule, LinkModule, PullRequestModule],
   controllers: [AccountController],
   providers: [LogService],
 })

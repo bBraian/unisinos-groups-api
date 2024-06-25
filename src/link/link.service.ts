@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateLinkBodySchema, CreatePrLinkBodySchema, UpdateLinkBodySchema } from './@types.type';
+import { CreateLinkBodySchema, CreatePrLinkBodySchema } from './@types.type';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -28,11 +28,9 @@ export class LinkService {
     }
   }
 
-  async createManyPR(body: CreateLinkBodySchema[]) {
-    const data = body.map(link => ({ status: 'WAITING_APPROVAL', ...link }));
-
+  async createManyPR(body: CreatePrLinkBodySchema[]) {
     const createdLinks = await this.prisma.prLink.createMany({
-      data: data
+      data: body
     })
 
     return {
@@ -43,43 +41,17 @@ export class LinkService {
   async createPR(body: CreatePrLinkBodySchema) {
     const { link, subjectId, title, type, linkId } = body
 
+    const action = linkId ? 'update' : 'new'
+    const pullRequest = await this.prisma.pullRequest.create({
+      data: { action, status: 'AWAITING_APPROVAL' }
+    })
+
     const createdLink = await this.prisma.prLink.create({
-      data: { status: 'WAITING_APPROVAL', link, subjectId, title, type, linkId }
+      data: { pullRequestId: pullRequest.id, link, subjectId, title, type, linkId }
     })
 
     return {
       createdLink
     }
-  }
-
-  update(id: number, body: UpdateLinkBodySchema) {
-    return `This action updates a #${id} link`;
-  }
-
-  async updatePR(id: number, body: UpdateLinkBodySchema) {
-    const { link, subjectId, title, type } = body
-
-    const linkExistOnPr = await this.prisma.prLink.findUnique({
-      where: { id }
-    })
-
-    if(!linkExistOnPr) {
-      const updatedLink = await this.prisma.prLink.create({
-        data: { status: 'WAITING_APPROVAL', link, subjectId, title, type }
-      })
-
-      return updatedLink
-    } else {
-      const updatedLink = await this.prisma.prLink.update({
-        data: { link, title },
-        where: { id }
-      })
-
-      return updatedLink
-    }
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} link`;
   }
 }

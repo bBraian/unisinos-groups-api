@@ -77,34 +77,54 @@ model Link {
 }
 
 model PrSubject {
-  id     Int     @id @default(autoincrement())
-  title  String
-  image  String?
-  status String
+  id    Int     @id @default(autoincrement())
+  title String
+  image String?
 
-  subjectId Int? @map("subject_id")
-  courseId  Int  @map("course_id")
+  pullRequestId Int  @map("pull_request_id")
+  courseId      Int  @map("course_id")
+  subjectId     Int? @map("subject_id")
 
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
-  course Course @relation(fields: [courseId], references: [id])
+  course      Course      @relation(fields: [courseId], references: [id])
+  pullRequest PullRequest @relation(fields: [pullRequestId], references: [id])
 
   @@map("pr_subjects")
 }
 
 model PrLink {
-  id          Int    @id @default(autoincrement())
-  title       String
-  link        String
-  type        String
-  prSubjectId Int?   @map("pr_subject_id")
-  subjectId   Int?   @map("subject_id")
-  linkId      Int?   @map("link_id")
-  status      String
+  id    Int    @id @default(autoincrement())
+  title String
+  link  String
+  type  String
+
+  pullRequestId Int  @map("pull_request_id")
+  prSubjectId   Int? @map("pr_subject_id")
+  subjectId     Int? @map("subject_id")
+
+  linkId Int? @map("link_id")
 
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
+  pullRequest PullRequest @relation(fields: [pullRequestId], references: [id])
+
   @@map("pr_links")
+}
+
+model PullRequest {
+  id Int @id @default(autoincrement())
+
+  action String
+  status String
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  PrSubject PrSubject[]
+  PrLink    PrLink[]
+
+  @@map("pull_requests")
 }
