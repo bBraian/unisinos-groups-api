@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -7,27 +7,65 @@ export class PullRequestService {
 
   async findAll() {
     const pullRequests = await this.prisma.pullRequest.findMany({
-      include: { PrSubject: true, PrLink: true }
-    })
-
-    const pullRequestsFormatted = pullRequests.map(pullRequest => {
-      const whatsappLinks = pullRequest.PrLink.filter(link => link.type == 'whatsapp')
-      const driveLinks = pullRequest.PrLink.filter(link => link.type == 'drive')
-      return (
-        {
-          ...pullRequest,
-          title: pullRequest.PrSubject[0].title,
-          image: pullRequest.PrSubject[0].image,
-          courseId: pullRequest.PrSubject[0].courseId,
-          whatsappLinks,
-          driveLinks,
-          PrLink: undefined,
-          PrSubject: undefined
-        }
-      )
+      include: { PrSubject: true, PrLink: true },
+      where: { status: 'AWAITING_APPROVAL' }
     });
 
-    return pullRequestsFormatted
+    
+    
+    const pullRequestsFormatted = await Promise.all(pullRequests.map(async pullRequest => {
+      const whatsappLinks = pullRequest.PrLink.filter(link => link.type === 'whatsapp');
+      const driveLinks = pullRequest.PrLink.filter(link => link.type === 'drive');
+  
+      if (pullRequest.action === 'new') {
+        const { PrLink, PrSubject, ...rest } = pullRequest;
+        return {
+          ...rest,
+          current: {},
+          new: {
+            title: pullRequest.PrSubject[0].title,
+            image: pullRequest.PrSubject[0].image,
+            courseId: pullRequest.PrSubject[0].courseId,
+            whatsappLinks,
+            driveLinks,
+          }
+        };
+      } else if (pullRequest.action === 'new_link') {
+        console.log(pullRequest)
+        const prLink = pullRequest.PrLink[0]
+  
+        if (!prLink?.subjectId) {
+          throw new NotFoundException('Erro ao buscar Link');
+        }
+  
+        const subject = await this.prisma.subject.findFirst({
+          where: { id: prLink.subjectId },
+          include: { links: true }
+        });
+
+
+        const { PrLink, PrSubject, ...rest } = pullRequest;
+        return {
+          ...rest,
+          current: {
+            title: subject?.title,
+            image: subject?.image,
+            courseId: subject?.courseId,
+            whatsappLinks,
+            driveLinks,
+          },
+          new: {
+            title: subject?.title,
+            image: subject?.image,
+            courseId: subject?.courseId,
+            whatsappLinks,
+            driveLinks,
+          }
+        };
+      }
+    }));
+  
+    return pullRequestsFormatted;
   }
 
   findOne(id: number) {
@@ -58,13 +96,38 @@ export class PullRequestService {
         prLinksCreated = [...prLinksCreated, createdLink]
       });
 
+      await this.prisma.pullRequest.update({
+        data: { status: 'APPROVED' },
+        where: { id }
+      })
+
       return {
         subject, 
         prLinksCreated
       }
       
-    } else if(pr?.action == 'update') {
+    } else if(pr?.action == 'new_link') {
+      const prLink = await this.prisma.prLink.findFirst({
+        where: { pullRequestId: pr.id }
+      })
 
+      if(!prLink?.subjectId) {
+        throw new NotFoundException('Erro ao buscar Link')
+      }
+      const subject = await this.prisma.subject.findFirst({
+        where: { id: prLink?.subjectId },
+        include: { links: true }
+      })
+      
+      return {
+        subject,
+        prLink
+      }
+
+      
+    
+    } else if(pr?.action == 'update_link') {
+      return 
     }
     return pr;
   }

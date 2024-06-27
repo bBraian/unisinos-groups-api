@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, HttpCode, UsePipes } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, HttpCode, UsePipes, Delete, Param } from '@nestjs/common';
 import { SubjectService } from './subject.service';
 import { CreateSubjectBodySchema, createSubjectBodySchema } from './@types.subject';
 import { AuthGuard } from '@nestjs/passport';
@@ -27,5 +27,11 @@ export class SubjectController {
   @Get()
   findAll() {
     return this.subjectService.findAll();
+  }
+  
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.subjectService.delete(parseInt(id));
   }
 }

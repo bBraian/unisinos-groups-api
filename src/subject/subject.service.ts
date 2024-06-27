@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSubjectBodySchema } from './@types.subject';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LinkService } from 'src/link/link.service';
@@ -66,6 +66,25 @@ export class SubjectService {
 
     return {
       subjects: processedSubjects
+    }
+  }
+
+  async delete(id: number) {
+    const subject = await this.prisma.subject.findUnique({
+      where: { id }
+    });
+
+    if(!subject) {
+      throw new NotFoundException('Registro não encontrado!')
+    }
+
+    await this.prisma.subject.delete({
+      where: { id },
+      include: { links: true }
+    })
+
+    return {
+      "message": "Registro deletado com sucesso!"
     }
   }
 }
