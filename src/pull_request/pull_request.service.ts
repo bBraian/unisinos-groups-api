@@ -10,8 +10,6 @@ export class PullRequestService {
       include: { PrSubject: true, PrLink: true },
       where: { status: 'AWAITING_APPROVAL' }
     });
-
-    
     
     const pullRequestsFormatted = await Promise.all(pullRequests.map(async pullRequest => {
       const whatsappLinks = pullRequest.PrLink.filter(link => link.type === 'whatsapp');
@@ -22,7 +20,7 @@ export class PullRequestService {
         return {
           ...rest,
           current: {},
-          new: {
+          latest: {
             title: pullRequest.PrSubject[0].title,
             image: pullRequest.PrSubject[0].image,
             courseId: pullRequest.PrSubject[0].courseId,
@@ -42,7 +40,8 @@ export class PullRequestService {
           where: { id: prLink.subjectId },
           include: { links: true }
         });
-
+        const currentWhatsAppLinks = subject?.links.filter(link => link.type == 'whatsapp') || []
+        const currentDriveLinks = subject?.links.filter(link => link.type == 'drive') || []
 
         const { PrLink, PrSubject, ...rest } = pullRequest;
         return {
@@ -51,15 +50,15 @@ export class PullRequestService {
             title: subject?.title,
             image: subject?.image,
             courseId: subject?.courseId,
-            whatsappLinks,
-            driveLinks,
+            whatsappLinks: currentWhatsAppLinks,
+            driveLinks: currentDriveLinks 
           },
-          new: {
+          latest: {
             title: subject?.title,
             image: subject?.image,
             courseId: subject?.courseId,
-            whatsappLinks,
-            driveLinks,
+            whatsappLinks: [...whatsappLinks, ...currentWhatsAppLinks],
+            driveLinks: [...driveLinks, ...currentDriveLinks],
           }
         };
       }
