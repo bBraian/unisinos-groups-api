@@ -29,7 +29,6 @@ export class PullRequestService {
           }
         };
       } else if (pullRequest.action === 'new_link') {
-        console.log(pullRequest)
         const prLink = pullRequest.PrLink[0]
   
         if (!prLink?.subjectId) {
@@ -61,14 +60,47 @@ export class PullRequestService {
             driveLinks: [...driveLinks, ...currentDriveLinks],
           }
         };
+      } else if(pullRequest.action == 'update_link') {
+        const prLink = pullRequest.PrLink[0]
+  
+        if (!prLink?.subjectId) {
+          throw new NotFoundException('Erro ao buscar Link');
+        }
+  
+        const subject = await this.prisma.subject.findFirst({
+          where: { id: prLink.subjectId },
+          include: { links: true }
+        });
+        const currentWhatsAppLinks = subject?.links.filter(link => link.type == 'whatsapp')
+        const currentDriveLinks = subject?.links.filter(link => link.type == 'drive')
+
+        const latestWhatsAppLinks: any = subject?.links.filter(link => link.type == 'whatsapp' && link.id != prLink.linkId) || []
+        const latestDriveLinks: any = subject?.links.filter(link => link.type == 'drive' && link.id != prLink.linkId) || []
+        prLink.type == 'whatsapp' ? latestWhatsAppLinks.push(prLink) : latestDriveLinks.push(prLink)
+
+        const { PrLink, PrSubject, ...rest } = pullRequest;
+        return {
+          ...rest,
+          current: {
+            title: subject?.title,
+            image: subject?.image,
+            courseId: subject?.courseId,
+            whatsappLinks: currentWhatsAppLinks,
+            driveLinks: currentDriveLinks,
+            linkIdUpdated: prLink.linkId,
+          },
+          latest: {
+            title: subject?.title,
+            image: subject?.image,
+            courseId: subject?.courseId,
+            whatsappLinks: latestWhatsAppLinks,
+            driveLinks: latestDriveLinks,
+          }
+        };
       }
     }));
   
     return pullRequestsFormatted;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} pullRequest`;
   }
 
   async approvePr(id: number) {
@@ -95,11 +127,6 @@ export class PullRequestService {
         prLinksCreated = [...prLinksCreated, createdLink]
       });
 
-      await this.prisma.pullRequest.update({
-        data: { status: 'APPROVED' },
-        where: { id }
-      })
-
       return {
         subject, 
         prLinksCreated
@@ -110,24 +137,41 @@ export class PullRequestService {
         where: { pullRequestId: pr.id }
       })
 
-      if(!prLink?.subjectId) {
-        throw new NotFoundException('Erro ao buscar Link')
+      if(!prLink) {
+        throw new NotFoundException('Link not found')
       }
-      const subject = await this.prisma.subject.findFirst({
-        where: { id: prLink?.subjectId },
-        include: { links: true }
+
+      const createdSubjectLink = await this.prisma.link.create({
+        data: { link: prLink?.link, title: prLink.title, type: prLink.type, subjectId: prLink.subjectId! }
       })
       
       return {
-        subject,
-        prLink
+        createdSubjectLink
+      }
+    } else if(pr?.action == 'update_link') {
+      const prLink = await this.prisma.prLink.findFirst({
+        where: { pullRequestId: pr.id }
+      })
+
+      if(!prLink) {
+        throw new NotFoundException('Link not found')
       }
 
+      const updateSubjectLink = await this.prisma.link.update({
+        data: { link: prLink?.link, title: prLink.title },
+        where: { id: prLink.linkId! }
+      })
       
-    
-    } else if(pr?.action == 'update_link') {
-      return 
+      return {
+        updateSubjectLink
+      }
     }
+
+    await this.prisma.pullRequest.update({
+      data: { status: 'APPROVED' },
+      where: { id }
+    })
+
     return pr;
   }
 

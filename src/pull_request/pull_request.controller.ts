@@ -10,11 +10,6 @@ export class PullRequestController {
     return this.pullRequestService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.pullRequestService.findOne(+id);
-  }
-
   @Put('/approve/:id')
   approvePr(@Param('id') id: string) {
     return this.pullRequestService.approvePr(+id);
