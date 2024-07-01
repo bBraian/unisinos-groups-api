@@ -28,6 +28,11 @@ export class SubjectController {
   findAll() {
     return this.subjectService.findAll();
   }
+
+  @Get('/count')
+  count() {
+    return this.subjectService.count();
+  }
   
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')

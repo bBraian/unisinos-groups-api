@@ -25,6 +25,12 @@ export class FeedbackService {
     }
   }
 
+  async count() {
+    const countFeedback = await this.prisma.feedback.count()
+
+    return countFeedback
+  }
+
   async findOne(id: number) {
     const feedback = await this.prisma.feedback.findUnique({
       where: { id }

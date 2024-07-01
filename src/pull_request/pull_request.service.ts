@@ -119,18 +119,11 @@ export class PullRequestService {
         data: { image: prSubject.image, title: prSubject.title, courseId: prSubject.courseId }
       })
 
-      let prLinksCreated = [{}]
       prLinks.forEach(async prLink => {
-        const createdLink = await this.prisma.link.create({
+        await this.prisma.link.create({
           data: { link: prLink.link, subjectId: subject.id, title: prLink.title, type: prLink.type }
         })
-        prLinksCreated = [...prLinksCreated, createdLink]
       });
-
-      return {
-        subject, 
-        prLinksCreated
-      }
       
     } else if(pr?.action == 'new_link') {
       const prLink = await this.prisma.prLink.findFirst({
@@ -141,13 +134,9 @@ export class PullRequestService {
         throw new NotFoundException('Link not found')
       }
 
-      const createdSubjectLink = await this.prisma.link.create({
+      await this.prisma.link.create({
         data: { link: prLink?.link, title: prLink.title, type: prLink.type, subjectId: prLink.subjectId! }
       })
-      
-      return {
-        createdSubjectLink
-      }
     } else if(pr?.action == 'update_link') {
       const prLink = await this.prisma.prLink.findFirst({
         where: { pullRequestId: pr.id }
@@ -157,14 +146,10 @@ export class PullRequestService {
         throw new NotFoundException('Link not found')
       }
 
-      const updateSubjectLink = await this.prisma.link.update({
+      await this.prisma.link.update({
         data: { link: prLink?.link, title: prLink.title },
         where: { id: prLink.linkId! }
       })
-      
-      return {
-        updateSubjectLink
-      }
     }
 
     await this.prisma.pullRequest.update({
@@ -182,5 +167,11 @@ export class PullRequestService {
     })
 
     return pullRequest
+  }
+
+  async count() {
+    const countPullRequests = await this.prisma.pullRequest.count()
+
+    return countPullRequests
   }
 }

@@ -69,6 +69,12 @@ export class SubjectService {
     }
   }
 
+  async count() {
+    const countSubject = await this.prisma.subject.count()
+
+    return countSubject
+  }
+
   async delete(id: number) {
     const subject = await this.prisma.subject.findUnique({
       where: { id }

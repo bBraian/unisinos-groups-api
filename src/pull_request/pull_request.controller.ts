@@ -10,6 +10,11 @@ export class PullRequestController {
     return this.pullRequestService.findAll();
   }
 
+  @Get('/count')
+  count() {
+    return this.pullRequestService.count();
+  }
+
   @Put('/approve/:id')
   approvePr(@Param('id') id: string) {
     return this.pullRequestService.approvePr(+id);
